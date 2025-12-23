@@ -1,15 +1,17 @@
 import express from "express";
-import authControl from "../controllers/authControl.js";
-
+import { registerUser, loginUser } from "../controllers/authControl.js";
 
 const router = express.Router();
 
-
+// Test route to check if users route is working
 router.get("/", (req, res) => {
-  res.send("users route working");
+  res.send("Users route working");
 });
 
 // Register user route
-router.post("/register", authControl)
+router.post("/register", registerUser);
+
+// Login user route
+router.post("/login", loginUser);
 
 export default router;

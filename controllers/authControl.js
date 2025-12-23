@@ -2,7 +2,7 @@ import userModel from "../models/user-model.js";
 import bcrypt from "bcrypt";
 import generateToken from "../utils/generateToken.js";
 
- const register = async (req, res) => {
+  export const registerUser = async (req, res) => {
   try {
     const { fullname, email, password } = req.body;
 
@@ -42,4 +42,45 @@ import generateToken from "../utils/generateToken.js";
     res.status(500).json({ error: "Internal server error" });
   }
 };
-export default register;
+
+export const loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    const user = await userModel.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const token = generateToken(user);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false, // localhost ke liye
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000
+    });    
+
+    res.status(200).json({
+      message: "User logged in successfully",
+      user
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+
+
