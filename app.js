@@ -1,13 +1,12 @@
+import dotenv from "dotenv";
 import express from "express";
 import ownerRoute from "./routes/ownersRouter.js";
 import productRoute from "./routes/productsRouter.js";
 import userRoute from "./routes/usersRouter.js";
 import connectDB from "./config/mongoose_connection.js";
-
 const app = express();
-
-// Connect to MongoDB before starting server
-await connectDB(); // اگر top-level await supported نہیں تو async function میں wrap کریں
+dotenv.config();
+await connectDB(); 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
